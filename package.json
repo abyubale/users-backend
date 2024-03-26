@@ -1,7 +1,7 @@
 {
-  "name": "sample-code",
+  "name": "users",
   "version": "1.0.0",
-  "description": "Sample node js project for learning",
+  "description": "Users project backend",
   "main": "index.js",
   "type": "module",
   "scripts": {
