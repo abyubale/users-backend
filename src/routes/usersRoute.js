@@ -22,7 +22,7 @@ usersRoute.get('/:userId', (req, res) => {
   if (userData && Object.keys(userData).length > 0) {
     res.json(userData);
   } else {
-    res.status(404).json({ status: 'fails', message: 'user not found' });
+    res.status(404).json(new ApiError('user not found', 404, true));
   }
 });
 
@@ -33,13 +33,13 @@ usersRoute.delete('/:userId', (req, res) => {
     usersData.splice(userIndex, 1);
     fs.writeFile('db/users.json', JSON.stringify(usersData), (err) => {
       if (err) {
-        res.status(500).json(new ApiError('failed to delete user', 500));
+        res.status(500).json(new ApiError('failed to delete user', 500, true));
       } else {
         res.status(204).json();
       }
     });
   } else {
-    res.status(404).json({ status: 'error', message: 'user not found' });
+    res.status(404).json(new ApiError('user not found', 404, true));
   }
 });
 
@@ -64,7 +64,7 @@ usersRoute.post(route.root, (req, res) => {
       if (err) {
         res
           .status(500)
-          .json({ status: 'fail', message: 'failed to create new user' });
+          .json(new ApiError('failed to create new user', 500, true));
       } else {
         res.status(201).json({
           status: 'success',
@@ -76,7 +76,7 @@ usersRoute.post(route.root, (req, res) => {
   } else {
     res
       .status(400)
-      .json({ status: 'fail', message: 'user data is not valid or missing' });
+      .json(new ApiError('user data is not valid or missing', 400, true));
   }
 });
 
@@ -96,9 +96,7 @@ usersRoute.put('/:userId', (req, res) => {
     usersData[userIndex] = updatedUserData;
     fs.writeFile('db/users.json', JSON.stringify(usersData), (err) => {
       if (err) {
-        res
-          .status(500)
-          .json({ status: 'fail', message: 'failed to update user' });
+        res.status(500).json(new ApiError('failed to update user', 500, true));
       } else {
         res.json({
           status: 'success',
@@ -108,9 +106,9 @@ usersRoute.put('/:userId', (req, res) => {
       }
     });
   } else if (userIndex === -1) {
-    res.status(404).json({ status: 'fail', message: 'User not found' });
+    res.status(404).json(new ApiError('User not found', 404, true));
   } else {
-    res.status(404).json({ status: 'fail', message: 'give user data' });
+    res.status(404).json(new ApiError('give user data', 404, true));
   }
 });
 
