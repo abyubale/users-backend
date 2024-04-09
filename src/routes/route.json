@@ -1,0 +1,6 @@
+{
+    "root":"/",
+    "api":"/api",
+    "weather":"/weather-details",
+    "users":"/users"
+}

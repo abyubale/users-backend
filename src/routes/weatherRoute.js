@@ -1,4 +1,5 @@
 import express from 'express';
+import route from './route.json' assert { type: 'json' };
 
 const weatherRoute = express.Router();
 
@@ -15,7 +16,7 @@ weatherRoute.use((req, res, next) => {
   next();
 });
 
-weatherRoute.get('/', async (req, res) => {
+weatherRoute.get(route.root, async (req, res) => {
   const { city, lat, lon } = req.query;
 
   if (city) {
