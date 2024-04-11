@@ -9,6 +9,9 @@ import {
   isMobileValid,
 } from '../utils/validator.js';
 import ApiError from '../utils/ApiError.js';
+import uploadCloud from '../utils/UploadCloud.js';
+import upload from '../utils/Upload.js';
+import User from '../models/user.js';
 
 const usersRoute = express.Router();
 
@@ -43,7 +46,7 @@ usersRoute.delete('/:userId', (req, res) => {
   }
 });
 
-usersRoute.post(route.root, (req, res) => {
+usersRoute.post(route.root, upload.single('avatar'), async (req, res) => {
   const { first_name, last_name, email, phone, avatar } = req.body;
 
   if (
@@ -54,25 +57,33 @@ usersRoute.post(route.root, (req, res) => {
     email &&
     isEmailValid(email) &&
     phone &&
-    isMobileValid(phone) &&
-    avatar
+    isMobileValid(phone)
   ) {
     const newId = usersData[usersData.length - 1].id + 1;
     const newUser = { id: newId, first_name, last_name, email, phone, avatar };
-    usersData.push(newUser);
-    fs.writeFile('db/users.json', JSON.stringify(usersData), (err) => {
-      if (err) {
-        res
+    if (req.file && req.file.path) {
+      try {
+        const cloudUrl = await uploadCloud(req.file.path);
+        newUser.avatar = cloudUrl;
+      } catch (err) {
+        console.error(err);
+        return res
           .status(500)
-          .json(new ApiError('failed to create new user', 500, true));
-      } else {
-        res.status(201).json({
-          status: 'success',
-          message: 'user created succesfully',
-          data: newUser,
-        });
+          .json(new ApiError('Error Uploading the file', 500, true));
       }
-    });
+    }
+    usersData.push(newUser);
+
+    try {
+      const user = new User(newUser);
+      const result = await user.save();
+      res.status(201).json(result);
+    } catch (err) {
+      console.log('error in DB saving', err);
+      res
+        .status(500)
+        .json(new ApiError('failed to create new user', 500, true));
+    }
   } else {
     res
       .status(400)
