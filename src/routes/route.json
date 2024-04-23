@@ -2,5 +2,7 @@
     "root":"/",
     "api":"/api",
     "weather":"/weather-details",
-    "users":"/users"
+    "users":"/users",
+    "show-users":"/display-users",
+    "search-users":"/search"
 }

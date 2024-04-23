@@ -29,6 +29,9 @@ const userSchema = new Schema(
     phone: {
       type: String,
     },
+    age: {
+      type: String,
+    },
     avatar: {
       type: String,
     },
